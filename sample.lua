@@ -11,9 +11,11 @@ local data =
        text="What do you want to do?",
        choices={
            {text="Say Hello!", next="D"},
-           {text="Say Goodbye!", next="D"}}},
-    D={type="text", text="This conversation is over!", next="E"},
-    E={type="function", func=testFunction}
+           {text="Say Goodbye!", next="E"}}},
+    D={type="text", text="You said hello!", next="F"},
+    E={type="text", text="You said goodbye!", next="F"},
+    F={type="text", text="This conversation is over!", next="G"},
+    G={type="function", func=testFunction}
 }
 
 return data
