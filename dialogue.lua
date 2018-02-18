@@ -15,7 +15,22 @@ function Dialogue:run()
 
     while self.current do
         local n = coroutine.yield()
-        self.current = self.data[self.current.next]
+
+        if self.current.type == "function" then
+            local ret = self.current.func()
+            local next = ret or self.current.next
+            self.current = self.data[next]
+
+        elseif self.current.type == "choice" then
+            print("Received choice: " .. n)
+            if self.current.choices[tonumber(n)] then
+                self.current = self.current.choices[n].next
+            end
+
+        else
+            self.current = self.data[self.current.next]
+        end
+
     end
 end
 
