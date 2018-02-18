@@ -22,7 +22,6 @@ function Dialogue:run()
             self.current = self.data[next]
 
         elseif self.current.type == "choice" then
-            print("Received choice: " .. n)
             if self.current.choices[tonumber(n)] then
                 self.current = self.data[self.current.choices[tonumber(n)].next]
             end
