@@ -17,9 +17,15 @@ function Dialogue:run()
         local n = coroutine.yield()
 
         if self.current.type == "function" then
-            local ret = self.current.func()
-            local next = ret or self.current.next
-            self.current = self.data[next]
+            local ret = self.current.func(self)
+
+            if(type(ret) == "table") then
+                self.current = ret
+            elseif(type(ret) == "string") then
+                self.current = self.data[ret]
+            else
+                self.current = self.data[self.current.next]
+            end
 
         elseif self.current.type == "choice" then
             if self.current.choices[tonumber(n)] then

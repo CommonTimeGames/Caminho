@@ -1,8 +1,14 @@
 Dialogue = require('dialogue')
-sample = require('sample')
+
+if #arg < 1 then
+    print("Usage: lua luatalk.lua <dialog>")
+    return
+end
+
+sample = require(arg[1])
 context = {}
 
-print("Starting dialogue...")
+print("Loaded dialog '" .. arg[1] .. "'")
 
 d = Dialogue:new(sample,context)
 d:start()
@@ -40,4 +46,4 @@ while(coroutine.status(d.co) ~= "dead") do
     end
 end
 
-print("Finished dialogue!")
+print("Complete!")
