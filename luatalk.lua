@@ -15,16 +15,16 @@ d:start()
 
 while(coroutine.status(d.co) ~= "dead") do
     if d.current.type == "text" then
-        print("Text: " .. d.current.text)
+        print("Text: " .. d.current:GetText())
         print("Press ENTER to continue...")
         io.read()
         d:continue()
 
     elseif d.current.type == "choice" then
-        print("Choice: " .. d.current.text)
+        print("Choice: " .. d.current:GetText())
 
         for i=1, #d.current.choices do
-            print(i .. ") " .. d.current.choices[i].text)
+            print(i .. ") " .. d.current.choices[i]:GetText())
         end
 
         print("Type a choice, then press ENTER to continue...")

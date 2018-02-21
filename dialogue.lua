@@ -11,29 +11,20 @@ end
 
 function Dialogue:run()
     assert(self.data.start, "data.start must not be nil!")
+
     self.current = self.data[self.data.start]
 
     while self.current do
         local n = coroutine.yield()
+        
+        if self.current.type == "choice" then
 
-        if self.current.type == "function" then
-            local ret = self.current.func(self)
-
-            if(type(ret) == "table") then
-                self.current = ret
-            elseif(type(ret) == "string") then
-                self.current = self.data[ret]
-            else
-                self.current = self.data[self.current.next]
-            end
-
-        elseif self.current.type == "choice" then
             if self.current.choices[tonumber(n)] then
-                self.current = self.data[self.current.choices[tonumber(n)].next]
+                self.current = self.current:Next(self, n)
             end
 
         else
-            self.current = self.data[self.current.next]
+            self.current = self.current:Next(self)
         end
 
     end
@@ -45,7 +36,12 @@ function Dialogue:start()
 end
 
 function Dialogue:continue(val)
-    coroutine.resume(self.co, val)
+    success, x = coroutine.resume(self.co, val)
+    
+    if not success then
+        print(x)
+    end
+
 end
 
 return Dialogue
