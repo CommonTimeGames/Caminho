@@ -1,21 +1,27 @@
-function testFunction(d, c)
-    print("testFunction() called!")
-end
+require('nodes')
+
+local helloChoices =
+{
+  TextNode:new{text="Say Hello", next="saidHello"},
+  TextNode:new{text="Say Goodbye", next="saidGoodbye"}
+}
 
 local data = 
 {
-    start="A",
-    A={type="text", text="Hello, World!", next="B"},
-    B={type="text", text="This is a sample dialogue.", next="C"},
-    C={type="choice", 
-       text="What do you want to do?",
-       choices={
-           {text="Say Hello!", next="D"},
-           {text="Say Goodbye!", next="E"}}},
-    D={type="text", text="You said hello!", next="F"},
-    E={type="text", text="You said goodbye!", next="F"},
-    F={type="text", text="This conversation is over!", next="G"},
-    G={type="function", func=testFunction}
+  start="A",
+
+  A=TextNode:new{text="Hello, World!", next="B"},
+  B=ChoiceNode:new{text="What do you want to say?", choices=helloChoices},
+
+  saidHello=TextNode:new{text="You said hello!", next="D"},
+  saidGoodbye=TextNode:new{text="You said goodbye!", next="D"},
+  
+  D=TextNode:new{text="This conversation is over!", next="E"},
+  E=FunctionNode:new{func="testFunc"},
+
+  testFunc=function(d) 
+    print("testFunc() called!")
+  end
 }
 
 return data
