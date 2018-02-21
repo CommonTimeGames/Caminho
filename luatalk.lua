@@ -13,18 +13,18 @@ print("Loaded dialog '" .. arg[1] .. "'")
 d = Dialogue:new(sample,context)
 d:start()
 
-while(coroutine.status(d.co) ~= "dead") do
+while coroutine.status(d.co) ~= "dead" do
     if d.current.type == "text" then
-        print("Text: " .. d.current:GetText())
+        print("Text: " .. d.current:GetText(d))
         print("Press ENTER to continue...")
         io.read()
         d:continue()
 
     elseif d.current.type == "choice" then
-        print("Choice: " .. d.current:GetText())
+        print("Choice: " .. d.current:GetText(d))
 
         for i=1, #d.current.choices do
-            print(i .. ") " .. d.current.choices[i]:GetText())
+            print(i .. ") " .. d.current.choices[i]:GetText(d))
         end
 
         print("Type a choice, then press ENTER to continue...")

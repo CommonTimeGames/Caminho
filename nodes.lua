@@ -18,34 +18,31 @@ end
 TextNode = Node:new{type = "text"}
 
 function TextNode:GetText(d)
+
     if self.key then
 
         -- TODO: Look up string for current locale 
         return key
 
-    elseif self.text and type(self.text) == "string" then
-
-        -- If text property is a string, return that string
-        return self.text
-
-    elseif d.func and d.func[self.text] and type(d.func[self.text]) == "function" then
+    elseif type(d.data[self.text]) == "function" then
 
         -- If text points to a function in d.func, 
         -- then return the result of that call
 
-        local ret = d.func[self.text]()
+        local ret = d.data[self.text](d)
 
         if ret and type(ret) == "string" then
             return ret
         else
-            error("TextNode.GetText() - provided function must return a string")
+            error("TextNode.GetText() function " .. self.text .. " must return a string!")
             return nil
         end
-        
-    else
-        -- Text property not found
-        return nil
-    end 
+
+    elseif self.text and type(self.text) == "string" then
+        -- If text property is a string, return that string
+        return self.text
+    end
+
 end
 
 -- WaitNode
@@ -74,7 +71,7 @@ function FunctionNode:Next(d)
         return nil
     end
 
-    local ret = d.data[self.func]()
+    local ret = d.data[self.func](d)
         
     -- If function returns no value, then 
     -- attempt to use value self.next
