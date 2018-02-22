@@ -20,10 +20,12 @@ d:add{package="second", name="choice", text="What do you want to say?", choices=
 d:add{package="second", name="saidHello", text="You said hello!", next="f"}
 d:add{package="second", name="saidGoodbye", text="You said goodbye!", next="f"}
 
-d:add{package="second", name="f", func="testFunc", next="complete"}
-d:add{package="second", name="complete", text="And now it's complete"}
+d:func({package="second", name="f", next="complete"},
+  function(d) 
+    print("testFunc() called!") 
+  end)
 
-d.second.testFunc = function() print("testFunc() called!") end
+d:add{package="second", name="complete", text="And now it's complete!"}
 
 -- Third Dialog
 

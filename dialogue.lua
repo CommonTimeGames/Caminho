@@ -124,7 +124,7 @@ function Dialogue:new(o)
     return o
 end
 
-function Dialogue.getNode(arg)
+function Dialogue:getNode(arg)
     
     if arg.node then
         return node
@@ -135,9 +135,6 @@ function Dialogue.getNode(arg)
             key=arg.key,
             choices=map(function(n) return TextNode:new(n) end, arg.choices)
         }
-
-    elseif arg.func then
-        return FunctionNode:new{func=arg.func}
 
     elseif arg.event then
         return EventNode:new{event=arg.event, data=arg.data}
@@ -157,7 +154,7 @@ function Dialogue:add(arg)
     assert(arg, "Dialogue:add(): Missing argument!")
     assert(arg.name, "Dialogue:add(): Missing node name!")
 
-    local node = self.getNode(arg)
+    local node = self:getNode(arg)
     assert(node, "Dialogue:add(): Could not find or deduce a valid node!")
 
     local target = arg.package or "default"
@@ -172,4 +169,23 @@ function Dialogue:add(arg)
     end
 
 end
+
+function Dialogue:func(arg, func)
+
+    assert(arg, "Dialogue:func(): Missing first argument!")
+    assert(arg.name, "Dialogue:add(): Missing node name!")
+    assert(func and type(func) == "function",
+         "Dialogue:func(): func must be callable")
+
+    local target = arg.package or "default"
+    self[target] = self[target] or {}
+
+    local funcName = arg.name .. "_func"
+    self[target][funcName] = func
+
+    local node = FunctionNode:new{func=funcName, next=arg.next}
+    self[target][arg.name] = node
+
+end
+
 
