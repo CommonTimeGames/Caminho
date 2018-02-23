@@ -1,51 +1,51 @@
-require('session')
+require('caminho')
 
 if #arg < 1 then
-    print("Usage: lua luatalk.lua <dialog> <package>")
+    print("Usage: lua run.lua <dialog> [<package>]")
     return
 end
 
-sample = require(arg[1])
-context = {}
+dlg = arg[1]
+pkg = arg[2] or "default"
 
-package = arg[2] or "default"
+c = Caminho:new()
+c:Start{name=dlg, package=pkg}
 
-print("Loaded dialog '" .. arg[1] .. "'")
+print("Loaded dialog '" .. arg[1] .. "', package '" .. pkg .. "'")
 
-s = Session:new(sample[package], context)
-s:Start()
-
-while coroutine.status(s.co) ~= "dead" do
-    if s.current.type == "text" then
-        print("Text: " .. s.current:GetText(s))
+while c.status == "active" do
+    
+    if c.current.node.type == "text" then
+        print("[Text] " .. c.current.node:GetText(c.current))
         print("Press ENTER to continue...")
         io.read()
-        s:Continue()
+        c:Continue()
 
-    elseif s.current.type == "choice" then
-        print("Choice: " .. s.current:GetText(s))
+    elseif c.current.node.type == "choice" then
+        print("[Choice] " .. c.current.node:GetText(c.current))
 
-        for i=1, #s.current.choices do
-            print(i .. ") " .. s.current.choices[i]:GetText(s))
+        for i=1, #c.current.node.choices do
+            print(i .. ") " .. c.current.node.choices[i]:GetText(c.current))
         end
 
         print("Type a choice, then press ENTER to continue...")
 
-        local c = io.read()
-        s:Continue(c)
+        local v = io.read()
+        c:Continue(v)
 
-    elseif(s.current.type == "function") then
-        print("Calling Function Node...")
-        s:Continue()
+    elseif(c.current.node.type == "function") then
+        print("[Function] ")
+        c:Continue()
 
-    elseif(s.current.type == "wait") then
-        print("Wait node: " .. d.current.time)
-        s:Continue()
+    elseif(c.current.node.type == "wait") then
+        print("[Wait] " .. c.current.node.time)
+        c:Continue()
 
-    elseif s.current.type then
-        print("*** ERROR: Don't know this node type: " .. s.current.type)
-        break
+    elseif c.current.node.type then
+        print("*** ERROR: Don't know this node type: " .. c.current.node.type)
+        c:End()
     end
+
 end
 
 print("Complete!")
