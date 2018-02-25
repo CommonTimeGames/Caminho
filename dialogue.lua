@@ -133,7 +133,7 @@ function Dialogue:getNode(arg)
         return ChoiceNode:new{
             text=arg.text,
             key=arg.key,
-            choices=map(function(n) return TextNode:new(n) end, arg.choices)
+            choices=util.map(function(n) return TextNode:new(n) end, arg.choices)
         }
 
     elseif arg.event then
