@@ -239,7 +239,12 @@ function Dialogue:sequence(arg)
 
     for i,v in ipairs(arg) do
         local node = self:getNode(arg[i])
+        
+        assert(node.type ~= ChoiceNode.type,
+         "Dialogue:sequence(): Choice nodes are not allowed in sequences!")
+
         assert(node, "Dialogue:sequence(): Could not deduce node #" .. i)
+        
         local destKey = ""
         local nextKey = ""
 
