@@ -2,9 +2,17 @@ require('dialogue')
 
 local d = Dialogue:new()
 
-d:add{name="a", text="This is a sample dialogue", next="b", start=true}
-d:add{name="b", text="This is some more interesting text", next="c"}
-d:add{name="c", text="This conversation is over!"}
+d:seq{
+  start=true,
+  name="test",
+  {text="This is a sample dialogue"},
+  {text="This is some more interesting text"},
+  {text="This conversation is over!"}
+}
+
+-- d:add{name="a", text="This is a sample dialogue", next="b", start=true}
+-- d:add{name="b", text="This is some more interesting text", next="c"}
+-- d:add{name="c", text="This conversation is over!"}
 
 -- Second Dialogue - Choice and Function nodes
 

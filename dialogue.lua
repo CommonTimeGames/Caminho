@@ -188,4 +188,44 @@ function Dialogue:func(arg, func)
 
 end
 
+function Dialogue:sequence(arg)
+    assert(arg, "Dialogue:sequence(): Missing first argument!")
+    assert(arg.name, "Dialogue:sequence(): arg.name property required!")
+    assert(#arg > 0, "Dialogue:sequence(): At least one element required!")
+
+    local package = arg.package or "default"
+    self[package] = self[package] or {}
+
+    local suffix = "_seq_"
+
+    for i,v in ipairs(arg) do
+        local node = self:getNode(arg[i])
+        assert(node, "Dialogue:sequence(): Could not deduce node #" .. i)
+        local destKey = ""
+        local nextKey = ""
+
+        destKey = arg.name
+
+        if i > 1 then 
+            destKey = destKey .. suffix .. i
+        end
+
+        if i == #arg then
+            nextKey = arg.next
+        else
+            nextKey = arg.name .. suffix .. i + 1
+        end
+
+        node.next = nextKey
+
+        self[package][destKey] = node
+    end
+
+    if arg.start then
+        self[package].start = arg.name
+    end
+end
+
+Dialogue.seq = Dialogue.sequence
+
 
