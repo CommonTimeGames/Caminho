@@ -46,6 +46,8 @@ while c.status == "active" do
         c:End()
     end
 
+    print("\n")
+
 end
 
 print("Complete!")

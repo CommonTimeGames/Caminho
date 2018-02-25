@@ -59,6 +59,9 @@ end
 FunctionNode = Node:new{type = "function"}
 
 function FunctionNode:Next(d)
+
+    local funcSuffix = "_func"
+    local targetFunc = nil
     
     -- FunctionNode must have property "func" defined;
     -- Then a function matching that name is searched for in
@@ -68,12 +71,20 @@ function FunctionNode:Next(d)
         error("FunctionNode: func property is missing!")
         return nil
 
-    elseif not d.data[self.func] or type(d.data[self.func]) ~= "function" then
-        error("FunctionNode: Missing function declaration " .. self.func)
-        return nil
+    else
+        local funcName = self.func .. funcSuffix
+
+        assert(d.data[funcName],
+         "FunctionNode:Next() Missing function declaration " .. funcName)
+
+        assert(type(d.data[funcName]) == "function",
+             "FunctionNode:Next() " .. funcName .. " must be callable!")
+
+        targetFunc = d.data[funcName]
+
     end
 
-    local ret = d.data[self.func](d)
+    local ret = targetFunc(d)
         
     -- If function returns no value, then 
     -- attempt to use value self.next
@@ -124,6 +135,31 @@ function Dialogue:new(o)
     return o
 end
 
+function Dialogue:makeFunction(arg)
+    local package = arg.package or "default"
+    local funcSuffix = "_func"
+
+    if type(arg.func) == "string" then
+        local funcName = arg.func .. funcSuffix
+
+        if type(self[package][funcName]) == "function" then
+            return FunctionNode:new{func=arg.func}
+        end
+
+    elseif type(arg.func) == "function" then
+
+        local baseName = arg.name or arg.funcName or util.randomString(5)
+        local funcName = baseName .. funcSuffix
+        self[package][funcName] = arg.func
+        return FunctionNode:new{func=baseName}
+
+    else
+        error("Dialogue:makeFunction(): arg.func " 
+            .. arg.func .. " must be callable or the name of a callable")
+    end
+    
+end
+
 function Dialogue:getNode(arg)
     
     if arg.node then
@@ -136,6 +172,9 @@ function Dialogue:getNode(arg)
             choices=util.map(function(n) return TextNode:new(n) end, arg.choices)
         }
 
+    elseif arg.func then
+        return self:makeFunction(arg)
+        
     elseif arg.event then
         return EventNode:new{event=arg.event, data=arg.data}
 
@@ -154,18 +193,18 @@ function Dialogue:add(arg)
     assert(arg, "Dialogue:add(): Missing argument!")
     assert(arg.name, "Dialogue:add(): Missing node name!")
 
+    local package = arg.package or "default"
+    self[package] = self[package] or {}
+
     local node = self:getNode(arg)
     assert(node, "Dialogue:add(): Could not find or deduce a valid node!")
 
-    local target = arg.package or "default"
-    self[target] = self[target] or {}
-    
     node.next = arg.next
 
-    self[target][arg.name] = node
+    self[package][arg.name] = node
 
     if arg.start then
-        self[target].start = arg.name
+        self[package].start = arg.name
     end
 
 end
@@ -177,14 +216,14 @@ function Dialogue:func(arg, func)
     assert(func and type(func) == "function",
          "Dialogue:func(): func must be callable")
 
-    local target = arg.package or "default"
-    self[target] = self[target] or {}
+    local package = arg.package or "default"
+    self[package] = self[package] or {}
 
     local funcName = arg.name .. "_func"
-    self[target][funcName] = func
+    self[package][funcName] = func
 
     local node = FunctionNode:new{func=funcName, next=arg.next}
-    self[target][arg.name] = node
+    self[package][arg.name] = node
 
 end
 

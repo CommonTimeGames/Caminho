@@ -5,8 +5,11 @@ local d = Dialogue:new()
 d:seq{
   start=true,
   name="test",
+  next="testFunc",
   {text="This is a sample dialogue"},
   {text="This is some more interesting text"},
+  {name="myFunc", func=function(d) print("Here's a function!") end},
+  {func="myFunc"},
   {text="This conversation is over!"}
 }
 
