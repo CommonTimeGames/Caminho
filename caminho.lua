@@ -53,6 +53,9 @@ function Caminho:Start(arg)
 
       d = d()
 
+      assert(d and type(d) == "table",
+       "Caminho:Start(): Dialogue: " .. arg.name .. " must return a table (see example files)!")
+
       local package = arg.package or "default"
       local data = d[package]
 
