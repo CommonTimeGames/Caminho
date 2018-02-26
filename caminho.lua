@@ -2,6 +2,8 @@
 -- By: Nigel Brady
 -- lordtrilink@gmail.com
 
+require('queue')
+
 Caminho = {}
 
 function Caminho:new(o)
@@ -11,6 +13,11 @@ function Caminho:new(o)
   
   o.loader = Caminho.Load
   o.loadDir = "."
+
+  o.cacheEnabled = true
+  o.cacheMaxSize = 10
+  o.cache = Queue:new()
+  
   o.status = "inactive"
   o.locale = "en"
   o.context = o.context or {}
@@ -42,12 +49,40 @@ function Caminho:setError(err)
   self.current.error = err
 end
 
+function Caminho:loadFromCache(name)
+
+  if self.cache[name] then
+    return self.cache[name]
+
+  else
+    local d = self:loader(name)
+
+    if not d then return end
+
+    while self.cache.size >= self.cacheMaxSize do
+      self.cache:popRight()
+    end
+
+    self.cache:pushLeft(d, name)
+
+    return d
+  end
+end
+
 function Caminho:Start(arg)
   status, err = pcall(function()
       assert(arg and arg.name, "Caminho:Start(): A valid dialogue name must be specified!")
       assert(self.loader, "Caminho:Start(): A valid dialogue loader must be provided!")
       
-      d = self:loader(arg.name)
+      local d = nil
+      
+      if self.cacheEnabled then
+        d = self:loadFromCache(arg.name)
+        --d = self:loader(arg.name)
+
+      else
+        d = self:loader(arg.name)
+      end
 
       assert(d, "Caminho:Start(): Cannot find dialogue: " .. arg.name)
 
@@ -108,3 +143,4 @@ function Caminho:End()
   self.current = nil
   self.status = "inactive"
 end
+
