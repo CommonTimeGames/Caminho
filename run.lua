@@ -41,6 +41,18 @@ while c.status == "active" do
         print("[Wait] " .. c.current.node.time)
         c:Continue()
 
+    elseif c.current.node.type == "set" then
+        print("[Set '" .. c.current.node.set .. "' to: " .. c.current.node.value .. "]")
+        c:Continue()
+
+    elseif c.current.node.type == "increment" then
+        print("[Increment '" .. c.current.node.increment .. "']")
+        c:Continue()
+
+    elseif c.current.node.type == "decrement" then
+        print("[Decrement '" .. c.current.node.decrement .. "']")
+        c:Continue()
+
     elseif c.current.node.type then
         print("*** ERROR: Don't know this node type: " .. c.current.node.type)
         c:End()

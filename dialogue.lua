@@ -125,6 +125,63 @@ EventNode = Node:new{type = "event"}
 -- ErrorNode
 ErrorNode = Node:new{type="error"}
 
+-- SetContextNode
+
+SetContextNode = Node:new{type="set"}
+
+function SetContextNode:Next(d)
+    assert(self.set,
+     "SetContextNode:Next(): Property 'set' must be present (context key to be set)!")
+
+    assert(self.value,
+        "SetContextNode:Next(): Property 'value' must be present (value to be set)!")
+
+    local skip = self.onceKey and d.context[self.onceKey] == true
+
+    if not skip then
+        d.context[self.set] = self.value
+        if self.onceKey then d.context[self.onceKey] = true end
+    end
+
+    return Node.Next(self, d)
+
+end
+
+IncrementNode = Node:new{type="increment"}
+
+function IncrementNode:Next(d)
+    assert(self.increment,
+     "IncrementNode:Next(): Property 'increment' must be present (context key to be incremented)!")
+
+    local value = d.context[self.increment] or 0
+
+    assert(tonumber(value),
+        "IncrementNode:Next(): Context property '" .. self.increment .. " cannot be incremented!")
+    
+    self.set = self.increment
+    self.value = value + 1
+
+    return SetContextNode.Next(self, d)
+end
+
+DecrementNode = Node:new{type="decrement"}
+
+function DecrementNode:Next(d)
+    assert(self.decrement,
+     "DecrementNode:Next(): Property 'decrement' must be present (context key to be decremented)!")
+
+    local value = d.context[self.decrement] or 0
+
+    assert(tonumber(value),
+        "DecrementNode:Next(): Context property '" .. self.decrement .. "' cannot be decremented!")
+    
+    self.set = self.decrement
+    self.value = tonumber(value) - 1
+
+    return SetContextNode.Next(self, d)
+end
+
+
 -- Dialogue 
 Dialogue = {}
 
@@ -189,13 +246,22 @@ function Dialogue:getNode(arg)
         return self:makeFunction(arg)
         
     elseif arg.event then
-        return EventNode:new{event=arg.event, data=arg.data}
+        return EventNode:new(arg)
 
     elseif arg.wait then
-        return WaitNode:new{wait=arg.wait}
+        return WaitNode:new(arg)
+
+    elseif arg.set then
+        return SetContextNode:new(arg)
+
+    elseif arg.increment then
+        return IncrementNode:new(arg)
+
+    elseif arg.decrement then
+        return DecrementNode:new(arg)
 
     elseif arg.text or arg.key then
-        return TextNode:new{text=arg.text, key=arg.key}
+        return TextNode:new(arg)
 
     end
 
@@ -252,12 +318,12 @@ function Dialogue:sequence(arg)
 
     for i,v in ipairs(arg) do
         local node = self:getNode(arg[i])
+
+        assert(node, "Dialogue:sequence(): Could not deduce node #" .. i)
         
         assert(node.type ~= ChoiceNode.type,
          "Dialogue:sequence(): Choice nodes are not allowed in sequences!")
 
-        assert(node, "Dialogue:sequence(): Could not deduce node #" .. i)
-        
         local destKey = ""
         local nextKey = ""
 

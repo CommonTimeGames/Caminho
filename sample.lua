@@ -8,7 +8,7 @@ d:seq{
   next="testFunc",
   {text="This is a sample dialogue"},
   {text="This is some more interesting text"},
-  {text="This conversation is over!"},
+  {text="This conversation is over!"}
 }
 
 -- d:add{name="a", text="This is a sample dialogue", next="b", start=true}
