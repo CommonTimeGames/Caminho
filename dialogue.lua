@@ -144,6 +144,19 @@ function Dialogue:makeFunction(arg)
 
         if type(self[package][funcName]) == "function" then
             return FunctionNode:new{func=arg.func}
+        else
+            local snippetContext = "local d = ... ; "
+            local compiled = 
+                assert(load(snippetContext .. arg.func),
+                 "Dialogue:makeFunction(): '" 
+                    .. arg.func .. "' is not a valid existing function or valid Lua snippet.")
+
+            local baseName = util.randomString(5)
+            local funcName = baseName .. funcSuffix
+
+            self[package][funcName] = function(d) compiled(d) end
+            
+            return FunctionNode:new{func=baseName}
         end
 
     elseif type(arg.func) == "function" then
