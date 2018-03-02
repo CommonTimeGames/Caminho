@@ -17,14 +17,14 @@ and allows you to focus on creating great content, not boilerplate code.
 This is the Lua backend of Caminho. If you’re running a game engine such as Unity 
 you’re probably more interested in one of the native bindings:
 
-Unity - Caminho-Unity
-.NET - Caminho.NET
+* Unity - Caminho-Unity
+* .NET - Caminho.NET
 
 Coming soon (hopefully)
 
-Java - Caminho.Java (coming soon!)
-C++ - Caminho++ (coming soon!)
-JS - Caminho.js (coming soon!)
+* Java - Caminho.Java (coming soon!)
+* C++ - Caminho++ (coming soon!)
+* JS - Caminho.js (coming soon!)
 
 However, you can still use these scripts to write
 and test your own dialogue content. 
