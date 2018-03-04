@@ -80,7 +80,7 @@ You can also run it at the command line:
     [Text] Have a nice day!
     Press ENTER to continue…
 
-For more information about how Caminho works, take a look at the wiki.
+For more information about how Caminho works, take a look at the [wiki](https://github.com/CommonTimeGames/Caminho/wiki).
 
 ### License ###
 
