@@ -303,7 +303,7 @@ function Dialogue:func(arg, func)
     local funcName = arg.name .. "_func"
     self[package][funcName] = func
 
-    local node = FunctionNode:new{func=funcName, next=arg.next}
+    local node = FunctionNode:new{func=arg.name, next=arg.next}
     self[package][arg.name] = node
 
 end
