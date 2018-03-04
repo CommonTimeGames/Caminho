@@ -1,7 +1,7 @@
 require('util')
 
 -- Base Node class
-Node = {}
+Node = {autoAdvance=false}
 
 function Node:new(o)
     o = o or {}
@@ -56,7 +56,7 @@ function WaitNode:Update(time)
 end
 
 -- FunctionNode
-FunctionNode = Node:new{type = "function"}
+FunctionNode = Node:new{type = "function", autoAdvance=true}
 
 function FunctionNode:Next(d)
 
@@ -127,7 +127,7 @@ ErrorNode = Node:new{type="error"}
 
 -- SetContextNode
 
-SetContextNode = Node:new{type="set"}
+SetContextNode = Node:new{type="set", autoAdvance=true}
 
 function SetContextNode:Next(d)
     assert(self.set,
@@ -147,7 +147,7 @@ function SetContextNode:Next(d)
 
 end
 
-IncrementNode = Node:new{type="increment"}
+IncrementNode = Node:new{type="increment", autoAdvance=true}
 
 function IncrementNode:Next(d)
     assert(self.increment,
@@ -164,7 +164,7 @@ function IncrementNode:Next(d)
     return SetContextNode.Next(self, d)
 end
 
-DecrementNode = Node:new{type="decrement"}
+DecrementNode = Node:new{type="decrement", autoAdvance=true}
 
 function DecrementNode:Next(d)
     assert(self.decrement,
@@ -195,6 +195,8 @@ end
 function Dialogue:makeFunction(arg)
     local package = arg.package or "default"
     local funcSuffix = "_func"
+
+    self[package] = self[package] or {}
 
     if type(arg.func) == "string" then
         local funcName = arg.func .. funcSuffix
@@ -301,7 +303,7 @@ function Dialogue:func(arg, func)
     local funcName = arg.name .. "_func"
     self[package][funcName] = func
 
-    local node = FunctionNode:new{func=funcName, next=arg.next}
+    local node = FunctionNode:new{func=arg.name, next=arg.next}
     self[package][arg.name] = node
 
 end
@@ -317,6 +319,7 @@ function Dialogue:sequence(arg)
     local suffix = "_seq_"
 
     for i,v in ipairs(arg) do
+        arg[i].package = package
         local node = self:getNode(arg[i])
 
         assert(node, "Dialogue:sequence(): Could not deduce node #" .. i)
