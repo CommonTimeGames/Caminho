@@ -123,6 +123,36 @@ test.decrementNode = function()
   test.equal(c.context.test, 7)
 end
 
+test.autoAdvance = function()
+  c:Start{name="data/autoAdvance.lua"}
+  test.equal(c.current.node.text, "Stop here.")
+  test.equal(c.context.foo, 7)
+
+  c:Start{name="data/autoAdvance.lua", package="second"}
+  test.equal(c.current.node.text, "Start here.")
+  c:Continue()
+  test.equal(c.current.node.text, "Stop here.")
+  test.equal(c.context.foo, 7)
+
+  c.autoAdvance = false;
+
+  c:Start{name="data/autoAdvance.lua", package="second"}
+  test.equal(c.current.node.text, "Start here.")
+  
+  c:Continue()
+  test.equal(c.current.node.type, "function")
+
+  c:Continue()
+  test.equal(c.current.node.type, "increment")
+
+  c:Continue()
+  test.equal(c.current.node.type, "increment")
+
+  c:Continue()
+  test.equal(c.current.node.text, "Stop here.")
+  test.equal(c.context.foo, 7)
+end
+
 -- obtain total number of tests and numer of failed tests
 local ntests, nfailed = test.result()
 
