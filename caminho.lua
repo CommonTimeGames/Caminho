@@ -33,11 +33,13 @@ function Caminho:Run()
 
   if self.autoAdvance and self.current.node.autoAdvance then
     repeat
+      self.current.node:OnEnter(self.current)
       self:Advance()
     until not self.current.node or not self.current.node.autoAdvance
   end
 
   while self.current.node do
+    self.current.node:OnEnter(self.current)
     local n = coroutine.yield()
     self:Advance(n)
   end

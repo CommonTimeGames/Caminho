@@ -10,6 +10,8 @@ function Node:new(o)
     return o
 end
 
+function Node:OnEnter(d) end
+
 function Node:Next(d)
     if self.next then
         return d.data[self.next]
@@ -19,12 +21,16 @@ end
 -- TextNode 
 TextNode = Node:new{type = "text"}
 
+function TextNode:OnEnter(d) 
+    self.text = self:GetText(d)
+end
+
 function TextNode:GetText(d)
 
     if self.key then
 
         -- TODO: Look up string for current locale 
-        return key
+        return self.key
 
     elseif type(d.data[self.text]) == "function" then
 
