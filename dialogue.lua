@@ -239,7 +239,7 @@ function Dialogue:makeFunction(arg)
 end
 
 function Dialogue:getNode(arg)
-    
+        
     if arg.node then
         return node
     

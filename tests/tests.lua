@@ -101,6 +101,28 @@ test.functionNodes = function()
   test.equal(c.context.test, 5)
 end
 
+test.setNode = function()
+  c:Start{name="data/context.lua"}
+  test.equal(c.current.node.text, "Second")
+  test.equal(c.context.test, 5)
+
+  c:Start{name="data/context.lua", package="second"}
+  test.equal(c.current.node.text, "Second")
+  test.equal(c.context.test, "foo")
+end
+
+test.incrementNode = function()
+  c:Start{name="data/context.lua", package="third"}
+  test.equal(c.current.node.text, "Second")
+  test.equal(c.context.test, 6)
+end
+
+test.decrementNode = function()
+  c:Start{name="data/context.lua", package="fourth"}
+  test.equal(c.current.node.text, "Second")
+  test.equal(c.context.test, 7)
+end
+
 -- obtain total number of tests and numer of failed tests
 local ntests, nfailed = test.result()
 
