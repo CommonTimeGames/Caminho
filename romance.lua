@@ -27,6 +27,7 @@ local data =
     getIntroText=function(d)
       local feelingText = ""
       local feeling = d.context.feeling or 0
+      print("Feeling: " .. tostring(feeling))
 
       if feeling > 2 then
         feelingText = positiveText

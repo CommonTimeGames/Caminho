@@ -22,7 +22,7 @@ end
 TextNode = Node:new{type = "text"}
 
 function TextNode:OnEnter(d) 
-    self.text = self:GetText(d)
+    self.displayText = self:GetText(d)
 end
 
 function TextNode:GetText(d)

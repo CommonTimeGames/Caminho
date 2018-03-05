@@ -63,11 +63,26 @@ test.textNodes =  function()
   c:Continue()
   test.equal(c.current.node.type, "text")
   test.equal(c.current.node.key, "fourth.key")
-  test.equal(c.current.node.text, "fourth.key")
+  test.equal(c.current.node.displayText, "fourth.key")
 
   c:Continue()
   test.equal(c.current.node.type, "text")
-  test.equal(c.current.node.text, "FunctionText")
+  test.equal(c.current.node.displayText, "FunctionText")
+end
+
+test.choiceNodes = function()
+  c:Start{name="data/choice.lua"}
+  test.equal(c.current.node.type, "choice")
+  test.equal(c.current.node.text, "What do you choose?")
+  
+  c:Continue(1)
+  test.equal(c.current.node.type, "text")
+  test.equal(c.current.node.text, "First Selected!")
+
+  c:Start{name="data/choice.lua"}
+  c:Continue(2)
+  test.equal(c.current.node.type, "text")
+  test.equal(c.current.node.text, "Second Selected!")
 end
 
 -- obtain total number of tests and numer of failed tests
