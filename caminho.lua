@@ -31,17 +31,14 @@ end
 function Caminho:Run()
   self.status = "active"
 
-  if self.autoAdvance and self.current.node.autoAdvance then
-    repeat
-      self.current.node:OnEnter(self.current)
-      self:Advance()
-    until not self.current.node or not self.current.node.autoAdvance
-  end
-
   while self.current.node do
     self.current.node:OnEnter(self.current)
-    local n = coroutine.yield()
-    self:Advance(n)
+    if self.autoAdvance and self.current.node.autoAdvance then
+      self:Advance()
+    else
+      local n = coroutine.yield()
+      self:Advance(n)
+    end
   end
 
   self.current = nil
