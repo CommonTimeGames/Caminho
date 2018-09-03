@@ -15,7 +15,7 @@ d:seq {
 
 d:add {
   start = true,
-  package = "second",
+  name = "second",
   id = "choice",
   text = "What do you want to say?",
   choices = {
@@ -24,12 +24,12 @@ d:add {
   }
 }
 
-d:add {package = "second", id = "saidHello", text = "You said hello!", next = "f"}
-d:add {package = "second", id = "saidGoodbye", text = "You said goodbye!", next = "f"}
+d:add {name = "second", id = "saidHello", text = "You said hello!", next = "f"}
+d:add {name = "second", id = "saidGoodbye", text = "You said goodbye!", next = "f"}
 
 d:func(
   {
-    package = "second",
+    name = "second",
     id = "f",
     next = "complete"
   },
@@ -38,12 +38,12 @@ d:func(
   end
 )
 
-d:add {package = "second", id = "complete", text = "And now it's complete!"}
+d:add {name = "second", id = "complete", text = "And now it's complete!"}
 
 -- Third Dialog
 
-d:add {package = "third", id = "a", text = "And this is yet another dialogue", next = "b", start = true}
-d:add {package = "third", id = "b", text = "Because we have so much to say", next = "c"}
-d:add {package = "third", id = "c", text = "But not anymore"}
+d:add {name = "third", id = "a", text = "And this is yet another dialogue", next = "b", start = true}
+d:add {name = "third", id = "b", text = "Because we have so much to say", next = "c"}
+d:add {name = "third", id = "c", text = "But not anymore"}
 
 return d

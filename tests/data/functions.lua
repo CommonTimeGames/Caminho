@@ -9,8 +9,8 @@ d.second.test_func = function(d)
   d.context.test = 4
 end
 
-d:add{package="second", id="func", func="test", start=true}
+d:add{name="second", id="func", func="test", start=true}
 
-d:add{package="third", id="func", func="d.context.test = 5", start=true}
+d:add{name="third", id="func", func="d.context.test = 5", start=true}
 
 return d

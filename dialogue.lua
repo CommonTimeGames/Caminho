@@ -1,5 +1,9 @@
 require('util')
 
+function getDialogueName(arg)
+    return arg.name or arg.dialogueName or "default"
+end
+
 -- Base Node class
 Node = {autoAdvance=false}
 
@@ -199,15 +203,15 @@ function Dialogue:new(o)
 end
 
 function Dialogue:makeFunction(arg)
-    local package = arg.package or "default"
+    local dName = getDialogueName(arg)
     local funcSuffix = "_func"
 
-    self[package] = self[package] or {}
+    self[dName] = self[dName] or {}
 
     if type(arg.func) == "string" then
         local funcName = arg.func .. funcSuffix
 
-        if type(self[package][funcName]) == "function" then
+        if type(self[dName][funcName]) == "function" then
             return FunctionNode:new{func=arg.func}
         else
             local snippetContext = "local d = ... ; "
@@ -219,7 +223,7 @@ function Dialogue:makeFunction(arg)
             local baseName = util.randomString(5)
             local funcName = baseName .. funcSuffix
 
-            self[package][funcName] = function(d) compiled(d) end
+            self[dName][funcName] = function(d) compiled(d) end
             
             return FunctionNode:new{func=baseName}
         end
@@ -228,7 +232,7 @@ function Dialogue:makeFunction(arg)
 
         local baseName = arg.id or arg.funcName or util.randomString(5)
         local funcName = baseName .. funcSuffix
-        self[package][funcName] = arg.func
+        self[dName][funcName] = arg.func
         return FunctionNode:new{func=baseName}
 
     else
@@ -280,18 +284,18 @@ function Dialogue:add(arg)
     assert(arg, "Dialogue:add(): Missing argument!")
     assert(arg.id, "Dialogue:add(): Missing node id!")
 
-    local package = arg.package or "default"
-    self[package] = self[package] or {}
+    local dName = getDialogueName(arg)
+    self[dName] = self[dName] or {}
 
     local node = self:getNode(arg)
     assert(node, "Dialogue:add(): Could not find or deduce a valid node!")
 
     node.next = arg.next
 
-    self[package][arg.id] = node
+    self[dName][arg.id] = node
 
     if arg.start then
-        self[package].start = arg.id
+        self[dName].start = arg.id
     end
 
 end
@@ -299,18 +303,18 @@ end
 function Dialogue:func(arg, func)
 
     assert(arg, "Dialogue:func(): Missing first argument!")
-    assert(arg.id, "Dialogue:add(): Missing node name!")
+    assert(arg.id, "Dialogue:add(): Missing node id!")
     assert(func and type(func) == "function",
          "Dialogue:func(): func must be callable")
 
-    local package = arg.package or "default"
-    self[package] = self[package] or {}
+    local dName = getDialogueName(arg)
+    self[dName] = self[dName] or {}
 
     local funcName = arg.id .. "_func"
-    self[package][funcName] = func
+    self[dName][funcName] = func
 
     local node = FunctionNode:new{func=arg.id, next=arg.next}
-    self[package][arg.id] = node
+    self[dName][arg.id] = node
 
 end
 
@@ -319,13 +323,13 @@ function Dialogue:sequence(arg)
     assert(arg.id, "Dialogue:sequence(): arg.id property required!")
     assert(#arg > 0, "Dialogue:sequence(): At least one element required!")
 
-    local package = arg.package or "default"
-    self[package] = self[package] or {}
+    local dName = getDialogueName(arg)
+    self[dName] = self[dName] or {}
 
     local suffix = "_seq_"
 
     for i,v in ipairs(arg) do
-        arg[i].package = package
+        arg[i].name = dName
         local node = self:getNode(arg[i])
 
         assert(node, "Dialogue:sequence(): Could not deduce node #" .. i)
@@ -350,11 +354,11 @@ function Dialogue:sequence(arg)
 
         node.next = nextKey
 
-        self[package][destKey] = node
+        self[dName][destKey] = node
     end
 
     if arg.start then
-        self[package].start = arg.id
+        self[dName].start = arg.id
     end
 end
 

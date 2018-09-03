@@ -1,12 +1,12 @@
 require('caminho')
 
 if #arg < 1 then
-    print("Usage: lua run.lua <dialog> [<package>]")
+    print("Usage: lua run.lua <package> [<dialogue>]")
     return
 end
 
-dlg = arg[1]
-pkg = arg[2] or "default"
+pkg = arg[1] 
+dlg = arg[2] or "default"
 
 c = Caminho:new()
 c.autoAdvance = false

@@ -1,4 +1,5 @@
 require("queue")
+require("dialogue")
 
 Caminho = {}
 
@@ -84,46 +85,51 @@ end
 function Caminho:loadDialogue(arg)
   assert(self.loader, "Caminho:loadDialogue(): A valid dialogue loader must be provided!")
   if self.cacheEnabled then
-    return self:loadFromCache(arg.name)
+    return self:loadFromCache(arg.package)
   else
-    return self:loader(arg.name)
+    return self:loader(arg.package)
   end
 end
 
 function Caminho:Start(arg)
   assert(self, "Call Caminho:Start(), not Caminho.Start()!")
+  assert(arg, "Caminho:Start(): Missing argument!")
   status, err =
     pcall(
     function()
       local d = nil
 
+      arg.package = arg.package or "default"
+      arg.name = arg.name or "default"
+
       if arg.data and type(arg.data) == "function" then
         arg.name = arg.name or "default"
+        arg.package = "raw"
         d = arg.data
       else
-        assert(arg and arg.name, "Caminho:Start(): A valid dialogue name must be specified!")
+        assert(arg.name, "Caminho:Start(): A valid dialogue name must be specified!")
         d = self:loadDialogue(arg)
       end
 
-      assert(d, "Caminho:Start(): Cannot find dialogue: " .. arg.name)
+      assert(d, "Caminho:Start(): Cannot find package: " .. arg.package)
 
       d = d()
 
       assert(
         d and type(d) == "table",
-        "Caminho:Start(): Dialogue: " .. arg.name .. " must return a table (see example files)!"
+        "Caminho:Start(): Package: " .. arg.package .. ", Dialogue: " .. arg.name .. " must return a table (see example files)!"
       )
 
-      local package = arg.package or "default"
-      local data = d[package]
+      local dName = getDialogueName(arg)
+      local data = d[dName]
 
-      assert(data, "Dialogue: " .. arg.name .. " is missing package " .. package .. "!")
+      assert(data, "Package: " .. arg.package .. " is missing dialogue " .. dName .. "!")
 
       local startNode = data[arg.start] or data[data.start]
 
       assert(
         startNode,
-        "Dialogue: " .. arg.name .. ", package: " .. package .. ": Unable to find start node " .. (arg.start or "start")
+        "Package: " .. arg.package .. ", dialogue: " .. dName .. ": Unable to find start node " .. (arg.start or "start")
       )
 
       self.current = {

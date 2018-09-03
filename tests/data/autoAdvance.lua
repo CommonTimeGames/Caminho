@@ -13,7 +13,7 @@ d:seq {
 
 d:seq {
   start = true,
-  package = "second",
+  name = "second",
   id = "test",
   {text = "Start here."},
   {func = "d.context.foo = 5"},
