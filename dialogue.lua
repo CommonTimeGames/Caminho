@@ -226,7 +226,7 @@ function Dialogue:makeFunction(arg)
 
     elseif type(arg.func) == "function" then
 
-        local baseName = arg.name or arg.funcName or util.randomString(5)
+        local baseName = arg.id or arg.funcName or util.randomString(5)
         local funcName = baseName .. funcSuffix
         self[package][funcName] = arg.func
         return FunctionNode:new{func=baseName}
@@ -278,7 +278,7 @@ end
 function Dialogue:add(arg)
 
     assert(arg, "Dialogue:add(): Missing argument!")
-    assert(arg.name, "Dialogue:add(): Missing node name!")
+    assert(arg.id, "Dialogue:add(): Missing node name!")
 
     local package = arg.package or "default"
     self[package] = self[package] or {}
@@ -288,10 +288,10 @@ function Dialogue:add(arg)
 
     node.next = arg.next
 
-    self[package][arg.name] = node
+    self[package][arg.id] = node
 
     if arg.start then
-        self[package].start = arg.name
+        self[package].start = arg.id
     end
 
 end
@@ -299,24 +299,24 @@ end
 function Dialogue:func(arg, func)
 
     assert(arg, "Dialogue:func(): Missing first argument!")
-    assert(arg.name, "Dialogue:add(): Missing node name!")
+    assert(arg.id, "Dialogue:add(): Missing node name!")
     assert(func and type(func) == "function",
          "Dialogue:func(): func must be callable")
 
     local package = arg.package or "default"
     self[package] = self[package] or {}
 
-    local funcName = arg.name .. "_func"
+    local funcName = arg.id .. "_func"
     self[package][funcName] = func
 
-    local node = FunctionNode:new{func=arg.name, next=arg.next}
-    self[package][arg.name] = node
+    local node = FunctionNode:new{func=arg.id, next=arg.next}
+    self[package][arg.id] = node
 
 end
 
 function Dialogue:sequence(arg)
     assert(arg, "Dialogue:sequence(): Missing first argument!")
-    assert(arg.name, "Dialogue:sequence(): arg.name property required!")
+    assert(arg.id, "Dialogue:sequence(): arg.id property required!")
     assert(#arg > 0, "Dialogue:sequence(): At least one element required!")
 
     local package = arg.package or "default"
@@ -336,7 +336,7 @@ function Dialogue:sequence(arg)
         local destKey = ""
         local nextKey = ""
 
-        destKey = arg.name
+        destKey = arg.id
 
         if i > 1 then 
             destKey = destKey .. suffix .. i
@@ -345,7 +345,7 @@ function Dialogue:sequence(arg)
         if i == #arg then
             nextKey = arg.next
         else
-            nextKey = arg.name .. suffix .. i + 1
+            nextKey = arg.id .. suffix .. i + 1
         end
 
         node.next = nextKey
@@ -354,7 +354,7 @@ function Dialogue:sequence(arg)
     end
 
     if arg.start then
-        self[package].start = arg.name
+        self[package].start = arg.id
     end
 end
 
