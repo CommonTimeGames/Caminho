@@ -278,7 +278,7 @@ end
 function Dialogue:add(arg)
 
     assert(arg, "Dialogue:add(): Missing argument!")
-    assert(arg.id, "Dialogue:add(): Missing node name!")
+    assert(arg.id, "Dialogue:add(): Missing node id!")
 
     local package = arg.package or "default"
     self[package] = self[package] or {}
