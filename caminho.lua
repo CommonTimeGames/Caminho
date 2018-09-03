@@ -1,4 +1,4 @@
-require('queue')
+require("queue")
 
 Caminho = {}
 
@@ -6,7 +6,7 @@ function Caminho:new(o)
   o = o or {}
   setmetatable(o, self)
   self.__index = self
-  
+
   o.loader = Caminho.Load
   o.loadDir = "."
 
@@ -15,7 +15,7 @@ function Caminho:new(o)
   o.cache = Queue:new()
 
   o.autoAdvance = true
-  
+
   o.status = "inactive"
   o.locale = "en"
   o.context = o.context or {}
@@ -62,14 +62,14 @@ function Caminho:setError(err)
 end
 
 function Caminho:loadFromCache(name)
-
   if self.cache[name] then
     return self.cache[name]
-
   else
     local d = self:loader(name)
 
-    if not d then return end
+    if not d then
+      return
+    end
 
     while self.cache.size >= self.cacheMaxSize do
       self.cache:popRight()
@@ -81,48 +81,58 @@ function Caminho:loadFromCache(name)
   end
 end
 
+function Caminho:loadDialogue(arg)
+  assert(self.loader, "Caminho:loadDialogue(): A valid dialogue loader must be provided!")
+  if self.cacheEnabled then
+    return self:loadFromCache(arg.name)
+  else
+    return self:loader(arg.name)
+  end
+end
+
 function Caminho:Start(arg)
   assert(self, "Call Caminho:Start(), not Caminho.Start()!")
-  status, err = pcall(function()
-      assert(arg and arg.name, "Caminho:Start(): A valid dialogue name must be specified!")
-      assert(self.loader, "Caminho:Start(): A valid dialogue loader must be provided!")
-      
+  status, err =
+    pcall(
+    function()
       local d = nil
-      
-      if self.cacheEnabled then
-        d = self:loadFromCache(arg.name)
-        --d = self:loader(arg.name)
 
+      if arg.data and type(arg.data) == "function" then
+        arg.name = arg.name or "default"
+        d = arg.data
       else
-        d = self:loader(arg.name)
+        assert(arg and arg.name, "Caminho:Start(): A valid dialogue name must be specified!")
+        d = self:loadDialogue(arg)
       end
 
       assert(d, "Caminho:Start(): Cannot find dialogue: " .. arg.name)
 
       d = d()
 
-      assert(d and type(d) == "table",
-       "Caminho:Start(): Dialogue: " .. arg.name .. " must return a table (see example files)!")
+      assert(
+        d and type(d) == "table",
+        "Caminho:Start(): Dialogue: " .. arg.name .. " must return a table (see example files)!"
+      )
 
       local package = arg.package or "default"
       local data = d[package]
 
-      assert(data,
-       "Dialogue: " .. arg.name .. " is missing package " .. package .. "!")
+      assert(data, "Dialogue: " .. arg.name .. " is missing package " .. package .. "!")
 
       local startNode = data[arg.start] or data[data.start]
 
-      assert(startNode,
-       "Dialogue: " .. arg.name .. ", package: " .. package ..
-        ": Unable to find start node " .. (arg.start or "start"))
+      assert(
+        startNode,
+        "Dialogue: " .. arg.name .. ", package: " .. package .. ": Unable to find start node " .. (arg.start or "start")
+      )
 
-      self.current ={
-        name=arg.name,
-        package=arg.package,
-        data=data,
-        context=self.context,
-        node=startNode,
-        co=coroutine.create(Caminho.Run)
+      self.current = {
+        name = arg.name,
+        package = arg.package,
+        data = data,
+        context = self.context,
+        node = startNode,
+        co = coroutine.create(Caminho.Run)
       }
 
       coSuccess, coError = coroutine.resume(self.current.co, self)
@@ -130,7 +140,6 @@ function Caminho:Start(arg)
       if not coSuccess then
         error(coError)
       end
-
     end
   )
 
@@ -138,19 +147,17 @@ function Caminho:Start(arg)
     self:setError(err)
     error(err)
   end
-
 end
 
 function Caminho:Continue(val)
   assert(self, "Call Caminho:Continue(), not Caminho.Continue()!")
   assert(self.status == "active", "Caminho:Continue(): No dialogue is currently active.")
   status, err = coroutine.resume(self.current.co, val)
-  
+
   if not status then
     self:setError(err)
     error(err)
   end
-
 end
 
 function Caminho:End()
@@ -158,4 +165,3 @@ function Caminho:End()
   self.current = nil
   self.status = "inactive"
 end
-
