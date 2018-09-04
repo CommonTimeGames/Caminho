@@ -14,7 +14,7 @@ test.tear_down = function()
 end
 
 test.basic = function()
-  c:Start {name = "data/basic.lua"}
+  c:Start {package = "data/basic.lua"}
   test.equal(c.current.node.text, "First")
 
   c:Continue()
@@ -25,7 +25,7 @@ test.basic = function()
 end
 
 test.status = function()
-  c:Start {name = "data/basic.lua"}
+  c:Start {package = "data/basic.lua"}
   test.equal(c.status, "active")
   c:Continue()
   c:Continue()
@@ -34,7 +34,7 @@ test.status = function()
 end
 
 test.package = function()
-  c:Start {name = "data/basic.lua", package = "second"}
+  c:Start {package = "data/basic.lua", name = "second"}
   test.equal(c.current.node.text, "Second:First")
 
   c:Continue()
@@ -45,7 +45,7 @@ test.package = function()
 end
 
 test.sequence = function()
-  c:Start {name = "data/basic.lua", package = "third"}
+  c:Start {package = "data/basic.lua", name = "third"}
   test.equal(c.current.node.text, "Sequence1")
 
   c:Continue()
@@ -56,7 +56,7 @@ test.sequence = function()
 end
 
 test.textNodes = function()
-  c:Start {name = "data/basic.lua", package = "fourth"}
+  c:Start {package = "data/basic.lua", name = "fourth"}
   test.equal(c.current.node.type, "text")
   test.equal(c.current.node.text, "First")
 
@@ -71,7 +71,7 @@ test.textNodes = function()
 end
 
 test.choiceNodes = function()
-  c:Start {name = "data/choice.lua"}
+  c:Start {package = "data/choice.lua"}
   test.equal(c.current.node.type, "choice")
   test.equal(c.current.node.text, "What do you choose?")
 
@@ -79,56 +79,56 @@ test.choiceNodes = function()
   test.equal(c.current.node.type, "text")
   test.equal(c.current.node.text, "First Selected!")
 
-  c:Start {name = "data/choice.lua"}
+  c:Start {package = "data/choice.lua"}
   c:Continue(2)
   test.equal(c.current.node.type, "text")
   test.equal(c.current.node.text, "Second Selected!")
 
-  c:Start {name = "data/choice.lua"}
+  c:Start {package = "data/choice.lua"}
   c:Continue()
   test.equal(c.current.node.type, "text")
   test.equal(c.current.node.text, "First Selected!")
 end
 
 test.functionNodes = function()
-  c:Start {name = "data/functions.lua"}
+  c:Start {package = "data/functions.lua"}
   test.equal(c.context.test, 3)
 
-  c:Start {name = "data/functions.lua", package = "second"}
+  c:Start {package = "data/functions.lua", name = "second"}
   test.equal(c.context.test, 4)
 
-  c:Start {name = "data/functions.lua", package = "third"}
+  c:Start {package = "data/functions.lua", name = "third"}
   test.equal(c.context.test, 5)
 end
 
 test.setNode = function()
-  c:Start {name = "data/context.lua"}
+  c:Start {package = "data/context.lua"}
   test.equal(c.current.node.text, "Second")
   test.equal(c.context.test, 5)
 
-  c:Start {name = "data/context.lua", package = "second"}
+  c:Start {package = "data/context.lua", name = "second"}
   test.equal(c.current.node.text, "Second")
   test.equal(c.context.test, "foo")
 end
 
 test.incrementNode = function()
-  c:Start {name = "data/context.lua", package = "third"}
+  c:Start {package = "data/context.lua", name = "third"}
   test.equal(c.current.node.text, "Second")
   test.equal(c.context.test, 6)
 end
 
 test.decrementNode = function()
-  c:Start {name = "data/context.lua", package = "fourth"}
+  c:Start {package = "data/context.lua", name = "fourth"}
   test.equal(c.current.node.text, "Second")
   test.equal(c.context.test, 7)
 end
 
 test.autoAdvance = function()
-  c:Start {name = "data/autoAdvance.lua"}
+  c:Start {package = "data/autoAdvance.lua"}
   test.equal(c.current.node.text, "Stop here.")
   test.equal(c.context.foo, 7)
 
-  c:Start {name = "data/autoAdvance.lua", package = "second"}
+  c:Start {package = "data/autoAdvance.lua", name = "second"}
   test.equal(c.current.node.text, "Start here.")
   c:Continue()
   test.equal(c.current.node.text, "Stop here.")
@@ -136,7 +136,7 @@ test.autoAdvance = function()
 
   c.autoAdvance = false
 
-  c:Start {name = "data/autoAdvance.lua", package = "second"}
+  c:Start {package = "data/autoAdvance.lua", name = "second"}
   test.equal(c.current.node.text, "Start here.")
 
   c:Continue()
@@ -164,6 +164,18 @@ test.loadRaw = function()
 
   c:Continue()
   test.equal(c.current.node.text, "Raw-Third")
+end
+
+test.resolveNames = function()
+  c.loadDir = "./data"
+  c:Start({name = "@basic/second"})
+  test.equal(c.current.node.text, "Second:First")
+
+  c:Continue()
+  test.equal(c.current.node.text, "Second:Second")
+
+  c:Continue()
+  test.equal(c.current.node.text, "Second:Third")
 end
 
 -- obtain total number of tests and numer of failed tests
