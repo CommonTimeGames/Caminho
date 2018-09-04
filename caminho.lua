@@ -94,6 +94,13 @@ end
 function Caminho:Start(arg)
   assert(self, "Call Caminho:Start(), not Caminho.Start()!")
   assert(arg, "Caminho:Start(): Missing argument!")
+  
+  if arg.name and string.sub(arg.name, 1, 1) == "@" then
+    resolved = Caminho.resolve(arg.name)
+    arg.name = resolved.name
+    arg.package = resolved.package
+  end
+
   status, err =
     pcall(
     function()
@@ -170,4 +177,27 @@ function Caminho:End()
   assert(self, "Call Caminho:End(), not Caminho.End()!")
   self.current = nil
   self.status = "inactive"
+end
+
+function Caminho.resolve(name)
+  result = {}
+  slashIndex = string.find(name, "/")
+
+  if slashIndex then
+    result.package = string.sub(name, 2, slashIndex - 1)
+    result.name = string.sub(name, slashIndex + 1, string.len(name))
+  else
+    result.package = string.sub(name, 2, string.len(name))
+  end
+
+  if not result.package or string.len(result.package) < 1 then
+    result.package = "default"
+  end
+
+  if not result.name or string.len(result.name) < 1 then
+    result.name = "default"
+  end
+
+  return result
+  
 end

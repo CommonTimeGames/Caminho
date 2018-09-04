@@ -5,14 +5,20 @@ if #arg < 1 then
     return
 end
 
-pkg = arg[1] 
+pkg = arg[1]
 dlg = arg[2] or "default"
+
+if string.sub(arg[1], 1, 1) == "@" then
+    resolved = Caminho.resolve(arg[1])
+    pkg = resolved.package .. ".lua"
+    dlg = resolved.name
+end
 
 c = Caminho:new()
 c.autoAdvance = false
 c:Start{name=dlg, package=pkg}
 
-print("Loaded dialog '" .. arg[1] .. "', package '" .. pkg .. "'")
+print("Loaded dialog '" .. dlg .. "', package '" .. pkg .. "'")
 
 while c.status == "active" do
     
