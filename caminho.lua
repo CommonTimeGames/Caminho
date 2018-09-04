@@ -26,7 +26,18 @@ end
 
 function Caminho:Load(filename)
   local path = self.loadDir .. "/" .. filename
-  return assert(loadfile(path))
+  local altPath = path .. ".lua"
+
+  result = loadfile(path)
+
+  if not result then 
+    result = loadfile(altPath)
+  end
+
+  assert(result, "Caminho:Load(): Cannot find file " .. path .. " or " .. altPath)
+
+  return result
+  
 end
 
 function Caminho:Run()

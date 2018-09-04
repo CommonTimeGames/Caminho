@@ -10,7 +10,7 @@ dlg = arg[2] or "default"
 
 if string.sub(arg[1], 1, 1) == "@" then
     resolved = Caminho.resolve(arg[1])
-    pkg = resolved.package .. ".lua"
+    pkg = resolved.package
     dlg = resolved.name
 end
 

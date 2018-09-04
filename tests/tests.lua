@@ -166,6 +166,18 @@ test.loadRaw = function()
   test.equal(c.current.node.text, "Raw-Third")
 end
 
+test.resolveNames = function()
+  c.loadDir = "./data"
+  c:Start({name = "@basic/second"})
+  test.equal(c.current.node.text, "Second:First")
+
+  c:Continue()
+  test.equal(c.current.node.text, "Second:Second")
+
+  c:Continue()
+  test.equal(c.current.node.text, "Second:Third")
+end
+
 -- obtain total number of tests and numer of failed tests
 local ntests, nfailed = test.result()
 
