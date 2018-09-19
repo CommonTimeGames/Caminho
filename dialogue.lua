@@ -31,7 +31,7 @@ end
 
 function TextNode:GetText(d)
 
-    if self.key then
+    if type(self.key) == "string" and string.len(self.key) > 0 then
 
         -- TODO: Look up string for current locale 
         return self.key
