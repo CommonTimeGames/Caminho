@@ -295,7 +295,7 @@ function Dialogue:add(arg)
     self[dName][arg.id] = node
 
     if arg.start then
-        self[dName].start = arg.id
+        self[dName].__start = arg.id
     end
 
 end
@@ -358,7 +358,7 @@ function Dialogue:sequence(arg)
     end
 
     if arg.start then
-        self[dName].start = arg.id
+        self[dName].__start = arg.id
     end
 end
 

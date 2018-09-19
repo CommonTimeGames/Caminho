@@ -143,7 +143,7 @@ function Caminho:Start(arg)
 
       assert(data, "Package: " .. arg.package .. " is missing dialogue " .. dName .. "!")
 
-      local startNode = data[arg.start] or data[data.start]
+      local startNode = data[arg.start] or data[data.__start]
 
       assert(
         startNode,
