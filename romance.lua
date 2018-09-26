@@ -19,7 +19,7 @@ local introChoices=
 local data =
 {
   default={
-    start="intro",
+    __start="intro",
     intro=ChoiceNode:new{text="getIntroText", choices=introChoices},
     giveFlowerFunc=FunctionNode:new{func="giveFlower", next="intro"},
     giveFrogFunc=FunctionNode:new{func="giveFrog", next="intro"},

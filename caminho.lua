@@ -30,14 +30,13 @@ function Caminho:Load(filename)
 
   result = loadfile(path)
 
-  if not result then 
+  if not result then
     result = loadfile(altPath)
   end
 
   assert(result, "Caminho:Load(): Cannot find file " .. path .. " or " .. altPath)
 
   return result
-  
 end
 
 function Caminho:Run()
@@ -105,7 +104,7 @@ end
 function Caminho:Start(arg)
   assert(self, "Call Caminho:Start(), not Caminho.Start()!")
   assert(arg, "Caminho:Start(): Missing argument!")
-  
+
   if arg.name and string.sub(arg.name, 1, 1) == "@" then
     resolved = Caminho.resolve(arg.name)
     arg.name = resolved.name
@@ -135,7 +134,8 @@ function Caminho:Start(arg)
 
       assert(
         d and type(d) == "table",
-        "Caminho:Start(): Package: " .. arg.package .. ", Dialogue: " .. arg.name .. " must return a table (see example files)!"
+        "Caminho:Start(): Package: " ..
+          arg.package .. ", Dialogue: " .. arg.name .. " must return a table (see example files)!"
       )
 
       local dName = getDialogueName(arg)
@@ -147,7 +147,8 @@ function Caminho:Start(arg)
 
       assert(
         startNode,
-        "Package: " .. arg.package .. ", dialogue: " .. dName .. ": Unable to find start node " .. (arg.start or "start")
+        "Package: " ..
+          arg.package .. ", dialogue: " .. dName .. ": Unable to find start node " .. (arg.start or "start")
       )
 
       self.current = {
@@ -184,6 +185,28 @@ function Caminho:Continue(val)
   end
 end
 
+function Caminho:Update(deltaTime)
+  assert(self, "Call Caminho:Update(), not Caminho.Update()!")
+  assert(tonumber(deltaTime), "deltaTime must be a numerical value!")
+  
+  if self.status ~= "active" then 
+    return
+  elseif self.current.node.type ~= "wait" then
+    return
+  end
+
+  if not self.current.node.elapsed then
+    self.current.node.elapsed = 0
+  end
+
+  self.current.node.elapsed = self.current.node.elapsed + deltaTime
+
+  if self.current.node.elapsed >= self.current.node.time then
+    self:Continue()
+  end
+
+end
+
 function Caminho:End()
   assert(self, "Call Caminho:End(), not Caminho.End()!")
   self.current = nil
@@ -210,5 +233,4 @@ function Caminho.resolve(name)
   end
 
   return result
-  
 end

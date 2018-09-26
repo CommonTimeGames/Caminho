@@ -101,6 +101,22 @@ test.functionNodes = function()
   test.equal(c.context.test, 5)
 end
 
+test.waitNode = function()
+  c:Start {package = "data/wait.lua"}
+  test.equal(c.current.node.text, "Begin")
+
+  c:Continue()
+
+  test.equal(c.current.node.type, "wait")
+
+  c:Update(1)
+  c:Update(1)
+  c:Update(1)
+
+  test.equal(c.current.node.text, "Final")
+end
+
+
 test.setNode = function()
   c:Start {package = "data/context.lua"}
   test.equal(c.current.node.text, "Second")
