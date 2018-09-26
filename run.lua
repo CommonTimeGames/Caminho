@@ -60,6 +60,10 @@ while c.status == "active" do
         print("[Decrement '" .. c.current.node.decrement .. "']")
         c:Continue()
 
+    elseif c.current.node.type == "event" then
+        print("[Event '" .. c.current.node.event .. "'] - ['" .. c.current.node.eventData .. "']")
+        c:Continue()
+
     elseif c.current.node.type then
         print("*** ERROR: Don't know this node type: " .. c.current.node.type)
         c:End()
